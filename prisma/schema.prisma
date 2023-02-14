@@ -25,6 +25,8 @@ model Note {
   note      String
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 // Necessary for Next auth
@@ -62,6 +64,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  notes         Note[]
 }
 
 model VerificationToken {

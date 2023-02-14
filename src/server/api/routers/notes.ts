@@ -1,21 +1,32 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const notesRouter = createTRPCRouter({
   createNote: publicProcedure
     .input(
       z.object({
         note: z.string(),
+        userId: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const note = await ctx.prisma.note.create({
         data: {
           note: input.note,
+          userId: input.userId,
         },
       });
       return note;
+    }),
+  getNotesByUser: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(({ input, ctx }) => {
+      return ctx.prisma.note.findMany({
+        where: {
+          userId: input.userId,
+        },
+      });
     }),
   getAllNotes: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.note.findMany();
@@ -41,8 +52,4 @@ export const notesRouter = createTRPCRouter({
         },
       });
     }),
-
-  // getSecretMessage: protectedProcedure.query(() => {
-  //   return "you can now see this secret message!";
-  // }),
 });
