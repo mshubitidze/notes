@@ -7,15 +7,12 @@ export const notesRouter = createTRPCRouter({
     .input(
       z.object({
         note: z.string(),
-        active: z.boolean().optional(),
-        createdAt: z.date().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const note = await ctx.prisma.note.create({
         data: {
           note: input.note,
-          active: input.active,
         },
       });
       return note;
@@ -35,7 +32,6 @@ export const notesRouter = createTRPCRouter({
         },
       });
     }),
-
   deleteNoteById: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {

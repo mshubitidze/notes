@@ -28,7 +28,6 @@ const Home: NextPage = () => {
     setNote("");
     await createNoteMutation.mutateAsync({
       note,
-      active: true,
     });
     await notes.refetch();
   };
