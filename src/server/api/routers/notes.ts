@@ -19,7 +19,7 @@ export const notesRouter = createTRPCRouter({
       });
       return note;
     }),
-  getNotesByUser: protectedProcedure
+  getNotesByUserId: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.prisma.note.findMany({
