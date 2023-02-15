@@ -137,7 +137,7 @@ const Home: NextPage = () => {
                       <button
                         onClick={() => handleNoteDelete(note.id)}
                         type="button"
-                        className="p-4 text-pink-500 rounded-lg min-h-[2rem] min-w-[2rem]"
+                        className="p-2 mr-2 hover:bg-white/10 text-pink-500 rounded-lg min-h-[2rem] min-w-[2rem]"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
