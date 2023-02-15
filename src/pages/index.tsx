@@ -20,7 +20,6 @@ const Home: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-
   // const notes = api.notes.getAllNotes.useQuery();
 
   const userNotes = api.notes.getNotesByUserId.useQuery(
@@ -157,8 +156,10 @@ const Home: NextPage = () => {
                       </button>
                     </div>
                   ))
+                ) : userNotes.status === "loading" ? (
+                  <div>Loading...</div>
                 ) : (
-                  <div>NO NOTES</div>
+                  <div>No Notes</div>
                 )}
               </div>
             </div>
