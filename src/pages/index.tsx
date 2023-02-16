@@ -2,6 +2,7 @@ import { type Note } from "@prisma/client";
 import { type NextPage } from "next";
 import Head from "next/head";
 import React, { useState, useEffect } from "react";
+import { nanoid } from "nanoid";
 
 import { useSession } from "next-auth/react";
 
@@ -42,16 +43,16 @@ const Home: NextPage = () => {
     e.preventDefault();
     if (!fetchedUserNotes) return;
     setNote("");
-    setFetchedUserNotes([
-      {
-        id: "tempNoteId",
-        note: note,
-        active: true,
-        createdAt: new Date(),
-        userId: "",
-      },
-      ...fetchedUserNotes,
-    ]);
+    const tempNoteId = nanoid();
+    const tempNoteUserId = nanoid();
+    const tempNote = {
+      id: tempNoteId,
+      note: note,
+      active: true,
+      createdAt: new Date(),
+      userId: tempNoteUserId,
+    };
+    setFetchedUserNotes([tempNote, ...fetchedUserNotes]);
     const newNote = await createNoteMutation.mutateAsync({
       note,
       userId: sessionData?.user.id || "",
@@ -79,6 +80,10 @@ const Home: NextPage = () => {
         return note;
       })
     );
+    // BUG:  because of how handleAddNewNote() works,
+    // if you toggle active on the temp note fast enough
+    // before the actual note data comes back from db,
+    // you get an error.
     await updateActiveNoteMutation.mutateAsync({
       id,
       active,
