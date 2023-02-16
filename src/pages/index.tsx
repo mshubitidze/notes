@@ -46,7 +46,7 @@ const Home: NextPage = () => {
     setNote("");
     setFetchedUserNotes([
       {
-        id: "newNote",
+        id: "tempNoteId",
         note: note,
         active: true,
         createdAt: new Date(),
@@ -58,9 +58,7 @@ const Home: NextPage = () => {
       note,
       userId: sessionData?.user.id || "",
     });
-    setFetchedUserNotes(
-      fetchedUserNotes.map((note) => (note.id === "newNote" ? newNote : note))
-    );
+    setFetchedUserNotes([newNote, ...fetchedUserNotes]);
     // await userNotes.refetch();
   }
 
