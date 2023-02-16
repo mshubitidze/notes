@@ -27,8 +27,6 @@ const Home: NextPage = () => {
       userId: sessionData?.user.id || "",
     },
     {
-      staleTime: Infinity,
-      cacheTime: Infinity,
       enabled: sessionData?.user !== undefined,
     }
   );
