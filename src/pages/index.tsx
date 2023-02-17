@@ -89,9 +89,9 @@ const Home: NextPage = () => {
       <main className="flex flex-col gap-10 justify-between items-center w-full min-h-screen">
         <Auth />
         {sessionData?.user.name && (
-          <div className="flex flex-col gap-10 justify-center items-center w-full">
+          <div className="flex flex-col gap-5 md:gap-10 justify-center items-center py-5 px-6 mx-4 rounded-xl md:py-10 md:px-12 md:w-5/6 bg-stone-500/5">
             <form
-              className="flex flex-col gap-4 justify-center items-center w-3/4 text-lg md:flex-row md:text-xl"
+              className="flex flex-col gap-4 justify-center items-center w-full text-lg md:flex-row md:text-xl"
               onSubmit={handleAddNewNote}
               autoComplete="off"
             >
@@ -117,7 +117,7 @@ const Home: NextPage = () => {
               </button>
             </form>
 
-            <div className="flex flex-col gap-4 w-3/4 rounded-lg select-none">
+            <div className="flex flex-col gap-4 w-full rounded-lg select-none">
               <h1 className="text-lg text-white md:text-2xl">Notes</h1>
               <div className="flex flex-col text-white">
                 {isLoading ? (
@@ -134,19 +134,19 @@ const Home: NextPage = () => {
                         onClick={() =>
                           handleNoteToggleActive(note.id, note.active)
                         }
-                        className="flex flex-row gap-4 items-center self-start p-4 w-full cursor-pointer"
+                        className="flex flex-row gap-4 items-center self-start py-4 px-2 md:px-4 w-full cursor-pointer"
                       >
                         {note.active ? (
                           <>
-                            <div className="rounded-full border border-green-500 min-h-[2.5rem] min-w-[2.5rem]"></div>
-                            <p className="text-xl">{note.note}</p>
+                                <div className="rounded-full border-2 border-green-500 min-h-[2rem] min-w-[2rem] md:min-h-[2.5rem] md:min-w-[2.5rem]"></div>
+                            <p className="text-lg md:text-xl">{note.note}</p>
                           </>
                         ) : (
                           <>
-                            <div className="flex justify-center items-center rounded-full border min-h-[2.5rem] min-w-[2.5rem] border-slate-500">
-                              <div className="rounded-full min-h-[2rem] min-w-[2rem] bg-slate-500"></div>
+                            <div className="flex justify-center items-center rounded-full border-2 min-h-[2rem] min-w-[2rem] md:min-h-[2.5rem] md:min-w-[2.5rem] border-slate-500">
+                              <div className="rounded-full min-h-[1.5rem] min-w-[1.5rem] md:min-h-[2rem] md:min-w-[2rem] bg-slate-500"></div>
                             </div>
-                            <p className="text-xl line-through text-slate-500">
+                            <p className="text-lg md:text-xl line-through text-slate-500">
                               {note.note}
                             </p>
                           </>
@@ -155,13 +155,13 @@ const Home: NextPage = () => {
                       <button
                         onClick={() => handleNoteDelete(note.id)}
                         type="button"
-                        className="mr-2 text-pink-500 rounded-lg min-h-[2rem] min-w-[2rem] hover:bg-white/10"
+                        className="p-2 mr-2 text-rose-500 rounded-lg min-h-[2rem] min-w-[2rem] hover:bg-white/10"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
-                          strokeWidth={1.5}
+                          strokeWidth={3.5}
                           stroke="currentColor"
                           className="w-8 h-8"
                         >

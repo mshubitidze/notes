@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  @apply bg-gray-900
+}
+
 body {
-  @apply bg-gradient-to-b from-[#2e026d] to-[#15162c]
+  /* @apply bg-gradient-to-b from-indigo-900 to-gray-900 */
+  @apply bg-gray-900
 }
