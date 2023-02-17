@@ -20,7 +20,7 @@ const Home: NextPage = () => {
   const [note, setNote] = useState<string>("");
   const [fetchedUserNotes, setFetchedUserNotes] = useState<Note[]>([]);
 
-  const { data: userNotes, isLoading } = api.notes.getNotesByUserId.useQuery(
+  const { isLoading } = api.notes.getNotesByUserId.useQuery(
     {
       userId: sessionData?.user.id || "",
     },
@@ -34,9 +34,6 @@ const Home: NextPage = () => {
       },
     }
   );
-
-  if (!userNotes || isLoading) return <p>Loading...</p>;
-  if (!userNotes.length) return <p>No Notes</p>;
 
   async function handleAddNewNote(e: React.FormEvent) {
     e.preventDefault();
@@ -123,55 +120,61 @@ const Home: NextPage = () => {
             <div className="flex flex-col gap-4 w-3/4 rounded-lg select-none">
               <h1 className="text-lg text-white md:text-2xl">Notes</h1>
               <div className="flex flex-col text-white">
-                {fetchedUserNotes.map((note) => (
-                  <div
-                    className="flex flex-row gap-2 justify-between items-center border border-transparent border-b-slate-500/50 first:border-t-slate-500/50"
-                    key={note.id}
-                  >
+                {isLoading ? (
+                  <p>Loading...</p>
+                ) : !isLoading && !fetchedUserNotes.length ? (
+                  <p>No Notes</p>
+                ) : (
+                  fetchedUserNotes.map((note) => (
                     <div
-                      onClick={() =>
-                        handleNoteToggleActive(note.id, note.active)
-                      }
-                      className="flex flex-row gap-4 items-center self-start p-4 w-full cursor-pointer"
+                      className="flex flex-row gap-2 justify-between items-center border border-transparent border-b-slate-500/50 first:border-t-slate-500/50"
+                      key={note.id}
                     >
-                      {note.active ? (
-                        <>
-                          <div className="rounded-full border border-green-500 min-h-[2.5rem] min-w-[2.5rem]"></div>
-                          <p className="text-xl">{note.note}</p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex justify-center items-center rounded-full border min-h-[2.5rem] min-w-[2.5rem] border-slate-500">
-                            <div className="rounded-full min-h-[2rem] min-w-[2rem] bg-slate-500"></div>
-                          </div>
-                          <p className="text-xl line-through text-slate-500">
-                            {note.note}
-                          </p>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => handleNoteDelete(note.id)}
-                      type="button"
-                      className="mr-2 text-pink-500 rounded-lg min-h-[2rem] min-w-[2rem] hover:bg-white/10"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-8 h-8"
+                      <div
+                        onClick={() =>
+                          handleNoteToggleActive(note.id, note.active)
+                        }
+                        className="flex flex-row gap-4 items-center self-start p-4 w-full cursor-pointer"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
+                        {note.active ? (
+                          <>
+                            <div className="rounded-full border border-green-500 min-h-[2.5rem] min-w-[2.5rem]"></div>
+                            <p className="text-xl">{note.note}</p>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex justify-center items-center rounded-full border min-h-[2.5rem] min-w-[2.5rem] border-slate-500">
+                              <div className="rounded-full min-h-[2rem] min-w-[2rem] bg-slate-500"></div>
+                            </div>
+                            <p className="text-xl line-through text-slate-500">
+                              {note.note}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleNoteDelete(note.id)}
+                        type="button"
+                        className="mr-2 text-pink-500 rounded-lg min-h-[2rem] min-w-[2rem] hover:bg-white/10"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-8 h-8"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
