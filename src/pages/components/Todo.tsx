@@ -87,7 +87,7 @@ const Todo = ({ todo }: TodoProps) => {
           id={id}
           checked={!active}
           onChange={(e) => {
-            doneMutation({ id, active: e.target.checked });
+            doneMutation({ id, active: !e.target.checked });
           }}
         />
         <label

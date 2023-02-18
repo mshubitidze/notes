@@ -24,7 +24,7 @@ export const notesRouter = createTRPCRouter({
         userId: ctx.session.user.id,
       },
     });
-    return todos.map(({ id, note, active }) => ({ id, note, active }));
+    return todos.map(({ id, note, active, createdAt }) => ({ id, note, active, createdAt }));
   }),
   updateActiveByUserId: protectedProcedure
     .input(

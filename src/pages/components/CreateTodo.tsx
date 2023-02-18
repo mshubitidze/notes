@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { type Todo, todoInput } from "../../types";
 import { api } from "../../utils/api";
+import { v4 as uuidv4 } from 'uuid';
 
 const CreateTodo = () => {
   const [newTodo, setNewTodo] = useState("");
@@ -20,9 +21,10 @@ const CreateTodo = () => {
       // Optimistically update to the new value
       trpc.notes.getNotesByUserId.setData(undefined, (prev) => {
         const optimisticTodo: Todo = {
-          id: newTodo + "-id",
-          note: newTodo, // 'placeholder'
+          id: uuidv4(),
+          note: newTodo,
           active: true,
+          createdAt: new Date()
         };
         if (!prev) return [optimisticTodo];
         return [...prev, optimisticTodo];
