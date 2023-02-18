@@ -2,7 +2,6 @@ import { type Note } from "@prisma/client";
 import { type NextPage } from "next";
 import Head from "next/head";
 import React, { useState } from "react";
-import { nanoid } from "nanoid";
 
 import { useSession } from "next-auth/react";
 
@@ -13,14 +12,79 @@ import Footer from "./components/Footer";
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
 
-  const createNoteMutation = api.notes.createNote.useMutation();
-  const deleteNoteMutation = api.notes.deleteNoteById.useMutation();
-  const updateActiveNoteMutation = api.notes.updateActiveById.useMutation();
+  const trpc = api.useContext();
 
   const [note, setNote] = useState<string>("");
-  const [fetchedUserNotes, setFetchedUserNotes] = useState<Note[]>([]);
+  // const [fetchedUserNotes, setFetchedUserNotes] = useState<Note[]>([]);
 
-  const { isLoading } = api.notes.getNotesByUserId.useQuery(
+  const { mutate: createNoteMutation } = api.notes.createNote.useMutation({
+    onMutate: async (newTodo) => {
+      await trpc.notes.getNotesByUserId.cancel();
+
+      const previousTodos = trpc.notes.getNotesByUserId.getData();
+
+      trpc.notes.getNotesByUserId.setData(
+        { userId: newTodo.userId },
+        (prev) => {
+          const tempNote = {
+            id: newTodo.userId + "-note",
+            note: newTodo.note,
+            active: true,
+            createdAt: new Date(),
+            userId: newTodo.userId,
+          };
+          if (!prev) return [tempNote];
+          return [...prev, tempNote];
+        }
+      );
+
+      console.log(previousTodos)
+
+      return { previousTodos };
+    },
+    onSettled: async () => {
+      await trpc.notes.getNotesByUserId.invalidate();
+    },
+  });
+  const {
+    mutate: deleteNoteMutation,
+    isLoading: deleteLoading,
+    isError: deleteError,
+  } = api.notes.deleteNoteById.useMutation();
+
+  const {
+    mutate: updateActiveNoteMutation,
+    isLoading: activeLoading,
+    isError: activeError,
+  } = api.notes.updateActiveByUserId.useMutation({
+    onMutate: async ({ id, active }) => {
+      await trpc.notes.getNotesByUserId.cancel();
+
+      const previousTodos = trpc.notes.getNotesByUserId.getData();
+
+      trpc.notes.getNotesByUserId.setData({ userId: id }, (prev) => {
+        if (!prev) return previousTodos;
+        return prev.map((t) => {
+          if (t.id === id) {
+            return {
+              ...t,
+              active,
+            };
+          }
+          return t;
+        });
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousTodos };
+    },
+  });
+
+  const {
+    data: fetchedUserNotes,
+    isLoading: fetchLoading,
+    isError: fetchError,
+  } = api.notes.getNotesByUserId.useQuery(
     {
       userId: sessionData?.user.id || "",
     },
@@ -30,53 +94,40 @@ const Home: NextPage = () => {
         const sortedUserNotes = items.sort((a, b) =>
           new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1
         );
-        setFetchedUserNotes(sortedUserNotes);
       },
     }
   );
 
-  async function handleAddNewNote(e: React.FormEvent) {
+  function handleAddNewNote(e: React.FormEvent) {
     e.preventDefault();
     setNote("");
-    const tempNoteId = nanoid();
-    const tempNoteUserId = nanoid();
-    const tempNote = {
-      id: tempNoteId,
-      note: note,
-      active: true,
-      createdAt: new Date(),
-      userId: tempNoteUserId,
-    };
-    setFetchedUserNotes([tempNote, ...fetchedUserNotes]);
-    const newNote = await createNoteMutation.mutateAsync({
+    createNoteMutation({
       note,
       userId: sessionData?.user.id || "",
     });
-    setFetchedUserNotes([newNote, ...fetchedUserNotes]);
   }
 
   async function handleNoteDelete(id: string) {
-    setFetchedUserNotes(fetchedUserNotes.filter((note) => note.id !== id));
-    await deleteNoteMutation.mutateAsync({
-      id,
-    });
+    // setFetchedUserNotes(fetchedUserNotes.filter((note) => note.id !== id));
+    // await deleteNoteMutation.mutateAsync({
+    //   id,
+    // });
   }
 
   async function handleNoteToggleActive(id: string, active: boolean) {
-    setFetchedUserNotes(
-      fetchedUserNotes.map((note) =>
-        note.id === id ? { ...note, active: !active } : note
-      )
-    );
-
-    // BUG: because of how handleAddNewNote works,
-    // if you toggle active on the temp note fast enough
-    // before the actual note data comes back from db,
-    // you get an error and the toggled state is reset.
-    await updateActiveNoteMutation.mutateAsync({
-      id,
-      active,
-    });
+    // setFetchedUserNotes(
+    //   fetchedUserNotes.map((note) =>
+    //     note.id === id ? { ...note, active: !active } : note
+    //   )
+    // );
+    // // BUG: because of how handleAddNewNote works,
+    // // if you toggle active on the temp note fast enough
+    // // before the actual note data comes back from db,
+    // // you get an error and the toggled state is reset.
+    // await updateActiveNoteMutation.mutateAsync({
+    //   id,
+    //   active,
+    // });
   }
 
   return (
@@ -89,7 +140,7 @@ const Home: NextPage = () => {
       <main className="flex flex-col gap-10 justify-between items-center w-full min-h-screen">
         <Auth />
         {sessionData?.user.name && (
-          <div className="flex flex-col gap-5 md:gap-10 justify-center items-center py-5 px-6 mx-4 rounded-xl md:py-10 md:px-12 md:w-5/6 bg-stone-500/5">
+          <div className="flex flex-col gap-5 justify-center items-center py-5 px-6 mx-4 rounded-xl md:gap-10 md:py-10 md:px-12 md:w-5/6 bg-stone-500/5">
             <form
               className="flex flex-col gap-4 justify-center items-center w-full text-lg md:flex-row md:text-xl"
               onSubmit={handleAddNewNote}
@@ -120,59 +171,62 @@ const Home: NextPage = () => {
             <div className="flex flex-col gap-4 w-full rounded-lg select-none">
               <h1 className="text-lg text-white md:text-2xl">Notes</h1>
               <div className="flex flex-col text-white">
-                {isLoading ? (
+                {fetchLoading ? (
                   <p>Loading...</p>
-                ) : !isLoading && !fetchedUserNotes.length ? (
-                  <p>No Notes</p>
                 ) : (
-                  fetchedUserNotes.map((note) => (
-                    <div
-                      className="flex flex-row gap-2 justify-between items-center border border-transparent border-b-slate-500/50 first:border-t-slate-500/50"
-                      key={note.id}
-                    >
+                  fetchedUserNotes &&
+                  (!fetchedUserNotes.length ? (
+                    <p>No Notes</p>
+                  ) : (
+                    fetchedUserNotes.map((note) => (
                       <div
-                        onClick={() =>
-                          handleNoteToggleActive(note.id, note.active)
-                        }
-                        className="flex flex-row gap-4 items-center self-start py-4 px-2 md:px-4 w-full cursor-pointer"
+                        className="flex flex-row gap-2 justify-between items-center border border-transparent border-b-slate-500/50 first:border-t-slate-500/50"
+                        key={note.id}
                       >
-                        {note.active ? (
-                          <>
-                                <div className="rounded-full border-2 border-green-500 min-h-[2rem] min-w-[2rem] md:min-h-[2.5rem] md:min-w-[2.5rem]"></div>
-                            <p className="text-lg md:text-xl">{note.note}</p>
-                          </>
-                        ) : (
-                          <>
-                            <div className="flex justify-center items-center rounded-full border-2 min-h-[2rem] min-w-[2rem] md:min-h-[2.5rem] md:min-w-[2.5rem] border-slate-500">
-                              <div className="rounded-full min-h-[1.5rem] min-w-[1.5rem] md:min-h-[2rem] md:min-w-[2rem] bg-slate-500"></div>
-                            </div>
-                            <p className="text-lg md:text-xl line-through text-slate-500">
-                              {note.note}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => handleNoteDelete(note.id)}
-                        type="button"
-                        className="p-2 mr-2 text-rose-500 rounded-lg min-h-[2rem] min-w-[2rem] hover:bg-white/10"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={3.5}
-                          stroke="currentColor"
-                          className="w-8 h-8"
+                        <div
+                          onClick={() =>
+                            handleNoteToggleActive(note.id, note.active)
+                          }
+                          className="flex flex-row gap-4 items-center self-start py-4 px-2 w-full cursor-pointer md:px-4"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+                          {note.active ? (
+                            <>
+                              <div className="rounded-full border-2 border-green-500 min-h-[2rem] min-w-[2rem] md:min-h-[2.5rem] md:min-w-[2.5rem]"></div>
+                              <p className="text-lg md:text-xl">{note.note}</p>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex justify-center items-center rounded-full border-2 min-h-[2rem] min-w-[2rem] border-slate-500 md:min-h-[2.5rem] md:min-w-[2.5rem]">
+                                <div className="rounded-full min-h-[1.5rem] min-w-[1.5rem] bg-slate-500 md:min-h-[2rem] md:min-w-[2rem]"></div>
+                              </div>
+                              <p className="text-lg line-through md:text-xl text-slate-500">
+                                {note.note}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleNoteDelete(note.id)}
+                          type="button"
+                          className="p-2 mr-2 text-rose-500 rounded-lg min-h-[2rem] min-w-[2rem] hover:bg-white/10"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={3.5}
+                            stroke="currentColor"
+                            className="w-8 h-8"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))
                   ))
                 )}
               </div>

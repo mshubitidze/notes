@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const notesRouter = createTRPCRouter({
-  createNote: publicProcedure
+  createNote: protectedProcedure
     .input(
       z.object({
         note: z.string(),
@@ -28,22 +28,19 @@ export const notesRouter = createTRPCRouter({
         },
       });
     }),
-  getAllNotes: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.note.findMany();
-  }),
-  updateActiveById: publicProcedure
+  updateActiveByUserId: protectedProcedure
     .input(z.object({ id: z.string(), active: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.note.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          active: !input.active,
-        },
-      });
+      where: {
+        id: input.id
+      },
+      data: {
+        active: !input.active
+      } 
+    })
     }),
-  deleteNoteById: publicProcedure
+  deleteNoteById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.note.delete({
