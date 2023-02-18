@@ -1,42 +1,34 @@
 import { z } from "zod";
+import { todoInput } from "../../../types";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const notesRouter = createTRPCRouter({
   createNote: protectedProcedure
-    .input(
-      z.object({
-        note: z.string(),
-        userId: z.string(),
-      })
-    )
+    .input(todoInput)
     .mutation(async ({ input, ctx }) => {
-      if (ctx.session.user.id !== input.userId)
-        console.error("Not Authoried to create");
-      const note = await ctx.prisma.note.create({
+      await ctx.prisma.note.create({
         data: {
-          note: input.note,
-          userId: input.userId,
-        },
-      });
-      return note;
-    }),
-  getNotesByUserId: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(({ input, ctx }) => {
-      return ctx.prisma.note.findMany({
-        where: {
-          userId: input.userId,
+          note: input,
+          User: {
+            connect: {
+              id: ctx.session.user.id,
+            },
+          },
         },
       });
     }),
+  getNotesByUserId: protectedProcedure.query(async ({ ctx }) => {
+    const todos = await ctx.prisma.note.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
+    return todos.map(({ id, note, active }) => ({ id, note, active }));
+  }),
   updateActiveByUserId: protectedProcedure
-    .input(
-      z.object({ userId: z.string(), id: z.string(), active: z.boolean() })
-    )
+    .input(z.object({ id: z.string(), active: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
-      if (ctx.session.user.id !== input.userId)
-        console.error("Not Authoried to toggle");
       await ctx.prisma.note.update({
         where: {
           id: input.id,
@@ -47,13 +39,11 @@ export const notesRouter = createTRPCRouter({
       });
     }),
   deleteNoteById: protectedProcedure
-    .input(z.object({userId: z.string(), id: z.string() }))
+    .input(z.string())
     .mutation(async ({ input, ctx }) => {
-      if (ctx.session.user.id !== input.userId)
-        console.error("Not Authoried to delete");
       await ctx.prisma.note.delete({
         where: {
-          id: input.id,
+          id: input,
         },
       });
     }),
