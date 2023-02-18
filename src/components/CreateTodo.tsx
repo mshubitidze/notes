@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { type Todo, todoInput } from "../../types";
-import { api } from "../../utils/api";
+import { type Todo, todoInput } from "../types";
+import { api } from "../utils/api";
 import { v4 as uuidv4 } from 'uuid';
 
 const CreateTodo = () => {

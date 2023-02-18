@@ -1,5 +1,5 @@
-import { type Todo } from "../../types";
-import { api } from "../../utils/api";
+import { type Todo } from "../types";
+import { api } from "../utils/api";
 
 type TodoProps = {
   todo: Todo;
