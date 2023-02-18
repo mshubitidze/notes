@@ -10,7 +10,7 @@ export const notesRouter = createTRPCRouter({
       await ctx.prisma.note.create({
         data: {
           note: input,
-          user: {
+          User: {
             connect: {
               id: ctx.session.user.id,
             },
