@@ -3,10 +3,10 @@ import Head from "next/head";
 
 import { useSession } from "next-auth/react";
 
-import Auth from "./components/Auth";
-import Footer from "./components/Footer";
-import Todos from "./components/Todos";
-import CreateTodo from "./components/CreateTodo";
+import Auth from "../components/Auth";
+import Footer from "../components/Footer";
+import Todos from "../components/Todos";
+import CreateTodo from "../components/CreateTodo";
 
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
