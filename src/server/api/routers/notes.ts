@@ -11,6 +11,8 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      if (ctx.session.user.id !== input.userId)
+        console.error("Not Authoried to create");
       const note = await ctx.prisma.note.create({
         data: {
           note: input.note,
@@ -29,20 +31,26 @@ export const notesRouter = createTRPCRouter({
       });
     }),
   updateActiveByUserId: protectedProcedure
-    .input(z.object({ id: z.string(), active: z.boolean() }))
+    .input(
+      z.object({ userId: z.string(), id: z.string(), active: z.boolean() })
+    )
     .mutation(async ({ input, ctx }) => {
+      if (ctx.session.user.id !== input.userId)
+        console.error("Not Authoried to toggle");
       await ctx.prisma.note.update({
-      where: {
-        id: input.id
-      },
-      data: {
-        active: !input.active
-      } 
-    })
+        where: {
+          id: input.id,
+        },
+        data: {
+          active: !input.active,
+        },
+      });
     }),
   deleteNoteById: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({userId: z.string(), id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      if (ctx.session.user.id !== input.userId)
+        console.error("Not Authoried to delete");
       await ctx.prisma.note.delete({
         where: {
           id: input.id,

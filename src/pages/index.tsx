@@ -108,26 +108,27 @@ const Home: NextPage = () => {
   }
 
   async function handleNoteDelete(id: string) {
-    // setFetchedUserNotes(fetchedUserNotes.filter((note) => note.id !== id));
-    // await deleteNoteMutation.mutateAsync({
-    //   id,
-    // });
+    await deleteNoteMutation.mutateAsync({
+      sessionData.user.id,
+      id,
+    });
   }
 
-  async function handleNoteToggleActive(id: string, active: boolean) {
+  function handleNoteToggleActive(id: string, active: boolean) {
     // setFetchedUserNotes(
     //   fetchedUserNotes.map((note) =>
     //     note.id === id ? { ...note, active: !active } : note
     //   )
     // );
-    // // BUG: because of how handleAddNewNote works,
-    // // if you toggle active on the temp note fast enough
-    // // before the actual note data comes back from db,
-    // // you get an error and the toggled state is reset.
-    // await updateActiveNoteMutation.mutateAsync({
-    //   id,
-    //   active,
-    // });
+    // BUG: because of how handleAddNewNote works,
+    // if you toggle active on the temp note fast enough
+    // before the actual note data comes back from db,
+    // you get an error and the toggled state is reset.
+    updateActiveNoteMutation({
+      userId: sessionData?.user.id || "",
+      id,
+      active,
+    });
   }
 
   return (
