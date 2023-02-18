@@ -35,9 +35,9 @@ const Todo = ({ todo }: TodoProps) => {
         console.log("Todo completed");
       }
     },
-    onError: (err, done, context) => {
+    onError: (err, active, context) => {
       console.error(
-        `An error occured when marking todo as ${done ? "done" : "undone"}`,
+        `An error occured when marking todo as ${active ? "done" : "undone"}`,
         err
       );
       if (!context) return;

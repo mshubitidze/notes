@@ -20,7 +20,7 @@ const CreateTodo = () => {
       // Optimistically update to the new value
       trpc.notes.getNotesByUserId.setData(undefined, (prev) => {
         const optimisticTodo: Todo = {
-          id: "optimistic-todo-id",
+          id: newTodo + "-id",
           note: newTodo, // 'placeholder'
           active: true,
         };

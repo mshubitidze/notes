@@ -27,14 +27,20 @@ export const notesRouter = createTRPCRouter({
     return todos.map(({ id, note, active }) => ({ id, note, active }));
   }),
   updateActiveByUserId: protectedProcedure
-    .input(z.object({ id: z.string(), active: z.boolean() }))
-    .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.note.update({
+    .input(
+      z.object({
+        id: z.string(),
+        active: z.boolean(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      const { id, active } = input;
+      return ctx.prisma.note.update({
         where: {
-          id: input.id,
+          id,
         },
         data: {
-          active: !input.active,
+          active,
         },
       });
     }),
