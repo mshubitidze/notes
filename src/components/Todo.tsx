@@ -78,32 +78,62 @@ const Todo = ({ todo }: TodoProps) => {
   });
 
   return (
-    <div className="flex gap-2 justify-between text-white items-center">
-      <div className="flex gap-2 items-center">
+    <div className={"flex w-full items-center justify-between text-white"}>
+      <div className="flex items-center w-full">
         <input
-          className="w-4 h-4 bg-gray-50 rounded border border-gray-300 cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-blue-300 dark:focus:ring-blue-600 focus:ring-3"
+          className="hidden bg-gray-50 rounded border border-gray-300 cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 focus:ring-blue-300 peer dark:focus:ring-blue-600 focus:ring-3"
           type="checkbox"
           name="done"
           id={id}
-          checked={!active}
+          checked={active}
           onChange={(e) => {
-            doneMutation({ id, active: !e.target.checked });
+            doneMutation({ id, active: e.target.checked });
           }}
         />
         <label
           htmlFor={id}
-          className={`cursor-pointer ${!active ? "line-through" : ""}`}
+          className={`text-md flex h-full w-full cursor-pointer items-center justify-start gap-2 rounded-l-lg px-3 py-3 md:gap-6 md:py-6 md:text-xl ${
+            !active ? "" : "line-through"
+          } ${
+            !active
+              ? "bg-green-500/10 hover:bg-green-500/20"
+              : "bg-stone-500/10 hover:bg-stone-500/20"
+          }`}
         >
+          <div
+            className={`flex items-center justify-center rounded-full border-2 ${
+              !active ? "border-green-500" : "border-stone-500"
+            } min-h-[1.8rem] min-w-[1.8rem] md:min-h-[2.5rem] md:min-w-[2.5rem]`}
+          >
+            <div
+              className={`rounded-full ${
+                !active ? "hidden bg-green-500" : "absolute bg-stone-500"
+              } min-h-[1.3rem] min-w-[1.3rem] md:min-h-[2rem] md:min-w-[2rem]`}
+            ></div>
+          </div>
           {note}
         </label>
       </div>
       <button
-        className="py-1 px-2 w-full text-sm font-medium text-center text-white bg-blue-700 rounded-lg sm:w-auto dark:bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="px-1.5 h-full text-white bg-rose-500 rounded-r-lg transition ease-in md:px-3 hover:bg-rose-700"
         onClick={() => {
           deleteMutation(id);
         }}
       >
-        Delete
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="min-h-[1.8rem] min-w-[1.8rem] md:min-h-[2.5rem] md:min-w-[2.5rem]"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
       </button>
     </div>
   );

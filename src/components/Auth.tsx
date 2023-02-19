@@ -5,7 +5,7 @@ const Auth = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
 
   return (
-    <div className="flex flex-col gap-2 justify-around items-center mt-4 w-3/4 md:justify-center">
+    <div className="flex flex-col gap-2 justify-around items-center py-6 w-3/4 md:justify-center">
       {sessionStatus === "loading" ? (
         <div className="m-8 text-3xl text-white">Loading...</div>
       ) : (

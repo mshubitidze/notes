@@ -69,7 +69,7 @@ const CreateTodo = () => {
 
   return (
     <form
-      className="flex flex-col gap-4 justify-center items-center w-full text-lg md:flex-row md:text-xl"
+      className="flex flex-col gap-4 mb-3 justify-center items-center w-full text-lg md:flex-row md:text-xl"
       onSubmit={handleAddNote}
       autoComplete="off"
     >
