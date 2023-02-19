@@ -93,21 +93,21 @@ const Todo = ({ todo }: TodoProps) => {
         <label
           htmlFor={id}
           className={`text-md flex h-full w-full cursor-pointer items-center justify-start gap-2 rounded-l-lg px-3 py-3 md:gap-6 md:py-6 md:text-xl ${
-            !active ? "" : "line-through"
+            active ? "" : "line-through"
           } ${
-            !active
+            active
               ? "bg-green-500/10 transition ease-in hover:bg-green-500/20"
               : "bg-stone-500/10 transition ease-in hover:bg-stone-500/20"
           }`}
         >
           <div
             className={`flex items-center justify-center rounded-full border-2 ${
-              !active ? "border-green-500" : "border-stone-500"
+              active ? "border-green-500" : "border-stone-500"
             } min-h-[1.8rem] min-w-[1.8rem] md:min-h-[2.5rem] md:min-w-[2.5rem]`}
           >
             <div
               className={`rounded-full ${
-                !active ? "hidden bg-green-500" : "absolute bg-stone-500"
+                active ? "hidden bg-green-500" : "absolute bg-stone-500"
               } min-h-[1.3rem] min-w-[1.3rem] md:min-h-[2rem] md:min-w-[2rem]`}
             ></div>
           </div>
