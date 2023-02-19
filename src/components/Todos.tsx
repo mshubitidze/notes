@@ -8,9 +8,9 @@ const Todos = () => {
     isError,
   } = api.notes.getNotesByUserId.useQuery();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  if (!todos.length) return <div>No Notes</div>;
+  if (isLoading) return <div className="text-white text-2xl">Loading...</div>;
+  if (isError) return <div className="text-rose-500 text-2xl">Error</div>;
+  if (!todos.length) return <div className="text-white text-2xl">No Notes</div>;
 
   return (
     <>

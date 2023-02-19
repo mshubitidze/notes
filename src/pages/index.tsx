@@ -26,7 +26,7 @@ const Home: NextPage = () => {
         <section className="flex flex-col justify-between items-center w-full">
           <Auth />
           {sessionData && (
-            <div className="flex flex-col gap-6 my-10 lg:w-1/2 w-5/6">
+            <div className="flex flex-col gap-6 my-10 w-5/6 lg:w-1/2">
               <CreateTodo />
               <Todos />
             </div>

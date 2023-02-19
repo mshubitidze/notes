@@ -26,7 +26,7 @@ const Auth = () => {
             </div>
           )}
           <button
-            className="py-3 px-10 font-semibold text-white no-underline rounded-full transition bg-white/10 hover:bg-white/20"
+            className="py-3 px-10 font-semibold text-white no-underline rounded-full transition ease-in bg-white/10 hover:bg-white/20"
             onClick={sessionData ? () => void signOut() : () => void signIn()}
           >
             {sessionData ? "Sign out" : "Sign in"}

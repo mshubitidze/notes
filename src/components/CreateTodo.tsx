@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { type Todo, todoInput } from "../types";
 import { api } from "../utils/api";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const CreateTodo = () => {
   const [newTodo, setNewTodo] = useState("");
@@ -24,7 +24,7 @@ const CreateTodo = () => {
           id: uuidv4(),
           note: newTodo,
           active: true,
-          createdAt: new Date()
+          createdAt: new Date(),
         };
         if (!prev) return [optimisticTodo];
         return [...prev, optimisticTodo];
@@ -69,7 +69,7 @@ const CreateTodo = () => {
 
   return (
     <form
-      className="flex flex-col gap-4 mb-3 justify-center items-center w-full text-lg md:flex-row md:text-xl"
+      className="flex flex-col gap-4 justify-center items-center mb-3 w-full text-lg md:flex-row md:text-xl"
       onSubmit={handleAddNote}
       autoComplete="off"
     >
@@ -78,7 +78,7 @@ const CreateTodo = () => {
           Add Note
         </label>
         <input
-          className="py-2 px-4 rounded-lg border outline-none md:py-4 md:px-8 border-white/10 bg-white/10 hover:border-white/20"
+          className="py-2 px-4 rounded-lg border transition ease-in outline-none md:py-4 md:px-8 border-white/10 bg-white/10 hover:border-white/20"
           value={newTodo}
           onChange={(e) => setNewTodo(e.currentTarget.value)}
           type="text"
@@ -89,7 +89,7 @@ const CreateTodo = () => {
       <button
         disabled={!newTodo.length}
         type="submit"
-        className="flex flex-row gap-2 justify-center items-center py-2 px-4 text-white rounded-lg border md:self-end md:py-4 md:px-8 disabled:border border-white/10 bg-white/10 hover:bg-white/20 disabled:border-white/10 disabled:bg-white/0"
+        className="flex flex-row gap-2 justify-center items-center py-2 px-4 text-white rounded-lg border transition ease-in md:self-end md:py-4 md:px-8 disabled:border border-white/10 bg-white/10 hover:bg-white/20 disabled:border-white/10 disabled:bg-white/0"
       >
         Return
       </button>

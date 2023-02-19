@@ -96,8 +96,8 @@ const Todo = ({ todo }: TodoProps) => {
             !active ? "" : "line-through"
           } ${
             !active
-              ? "bg-green-500/10 hover:bg-green-500/20"
-              : "bg-stone-500/10 hover:bg-stone-500/20"
+              ? "bg-green-500/10 transition ease-in hover:bg-green-500/20"
+              : "bg-stone-500/10 transition ease-in hover:bg-stone-500/20"
           }`}
         >
           <div
@@ -115,7 +115,7 @@ const Todo = ({ todo }: TodoProps) => {
         </label>
       </div>
       <button
-        className="px-1.5 h-full text-white bg-rose-500 rounded-r-lg transition ease-in md:px-3 hover:bg-rose-700"
+        className="px-1.5 h-full text-white rounded-r-lg transition ease-in md:px-3 hover:bg-rose-700 bg-rose-500/70"
         onClick={() => {
           deleteMutation(id);
         }}
